@@ -32,6 +32,8 @@ void printInstructions(void);
 bool isValidRookMove(const coords fromLoc, const coords toLoc);
 bool isValidKnightMove(const coords fromLoc, const coords toLoc);
 bool isValidPawnMove(const coords fromLoc, const coords toLoc);
+bool isValidBishopMove(const coords fromLoc, const coords toLoc);
+bool isValidQueenMove(const coords fromLoc, const coords toLoc);
 bool validateAndMakeMove(const coords fromLoc, const coords toLoc);
 void makeMove(const coords fromLoc, const coords toLoc);
 bool areKingsAlive(void);
@@ -52,12 +54,13 @@ int main(void)
         takeInput(&fromLoc, &toLoc, playerTurn);
         if (!validateAndMakeMove(fromLoc, toLoc))
         {
-            printf("going to continue in the do-while\n\n");
+            // printf("going to continue in the do-while\n\n");
             continue;
         }
         playerTurn = (playerTurn == 'W') ? 'B' : 'W';
         // system("clear");
     } while (areKingsAlive());
+    printf("\n%s Wins!!\n\n", (playerTurn == 'W') ? "Black" : "White");
     return 0;
 }
 
@@ -135,34 +138,113 @@ void showBoard(void)
             if ((i % 2 != 0) && (j % 2 != 0))
             {
                 if (i == 17 && j == 1)
+                {
                     printf("    ");
+                }
                 else if (i == 17 && j != 1)
+                {
+                    printf("\033[0;31m"); // red
                     printf(" %c  ", charac++);
+                    printf("\033[0m"); // reset
+                }
                 else if (i != 17 && j == 1)
+                {
+                    printf("\033[0;31m"); // red
                     printf(" %i  ", num--);
+                    printf("\033[0m"); // reset
+                }
                 else if (i != 17 && j != 1)
                 {
                     x = (i - 1) / 2;
                     y = (j - 3) / 2;
-                    printf(" %c%c ", pos[x][y].color, pos[x][y].pieceType);
+                    if (pos[x][y].color == 'B')
+                    {
+                        printf("\033[1;30m"); // black
+                        printf(" %c%c ", pos[x][y].color, pos[x][y].pieceType);
+                        printf("\033[0m"); // reset
+                    }
+                    else
+                    {
+                        printf(" %c%c ", pos[x][y].color, pos[x][y].pieceType);
+                    }
                 }
             }
             else if ((i % 2 != 0) && (j % 2 == 0))
             {
+                printf("\033[0;32m"); // green
                 printf("|");
+                printf("\033[0m"); // reset
             }
             else if ((i % 2 == 0) && (j % 2 != 0))
             {
+                printf("\033[0;32m"); // green
                 printf("----");
+                printf("\033[0m"); // reset
             }
             else if ((i % 2 == 0) && (j % 2 == 0))
             {
+                printf("\033[0;32m"); // green
                 printf("+");
+                printf("\033[0m"); // reset
             }
         }
         printf("\n");
     }
     printf("\n\n");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // int x = 0, y = 0;
+    // char charac = 97, num = 8;
+    // for (int i = 0; i < 19; i++)
+    // {
+    //     for (int j = 0; j < 19; j++)
+    //     {
+    //         if ((i % 2 != 0) && (j % 2 != 0))
+    //         {
+    //             if (i == 17 && j == 1)
+    //                 printf("    ");
+    //             else if (i == 17 && j != 1)
+    //                 printf(" %c  ", charac++);
+    //             else if (i != 17 && j == 1)
+    //                 printf(" %i  ", num--);
+    //             else if (i != 17 && j != 1)
+    //             {
+    //                 x = (i - 1) / 2;
+    //                 y = (j - 3) / 2;
+    //                 printf(" %c%c ", pos[x][y].color, pos[x][y].pieceType);
+    //             }
+    //         }
+    //         else if ((i % 2 != 0) && (j % 2 == 0))
+    //         {
+    //             printf("|");
+    //         }
+    //         else if ((i % 2 == 0) && (j % 2 != 0))
+    //         {
+    //             printf("----");
+    //         }
+    //         else if ((i % 2 == 0) && (j % 2 == 0))
+    //         {
+    //             printf("+");
+    //         }
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n\n");
 }
 
 void takeInput(coords *fromLoc, coords *toLoc, char playerColor)
@@ -287,31 +369,31 @@ bool validateAndMakeMove(const coords fromLoc, const coords toLoc)
         case 'B':
         {
             // call bishop
-            // if (isValidBishopMove(fromLoc, toLoc))
-            // {
-            //     makeMove(fromLoc, toLoc);
-            //     printf("\nBishop Moved!!\n\n");
-            // }
-            // else
-            // {
-            //     printf("\nInvalid Bishop Move!! Try Again\n\n");
-            //     return false;
-            // }
+            if (isValidBishopMove(fromLoc, toLoc))
+            {
+                makeMove(fromLoc, toLoc);
+                printf("\nBishop Moved!!\n\n");
+            }
+            else
+            {
+                printf("\nInvalid Bishop Move!! Try Again\n\n");
+                return false;
+            }
             break;
         }
         case 'Q':
         {
             // call queen
-            // if (isValidQueenMove(fromLoc, toLoc))
-            // {
-            //     makeMove(fromLoc, toLoc);
-            //     printf("\nQueen Moved!!\n\n");
-            // }
-            // else
-            // {
-            //     printf("\nInvalid Queen Move!! Try Again\n\n");
-            //     return false;
-            // }
+            if (isValidQueenMove(fromLoc, toLoc))
+            {
+                makeMove(fromLoc, toLoc);
+                printf("\nQueen Moved!!\n\n");
+            }
+            else
+            {
+                printf("\nInvalid Queen Move!! Try Again\n\n");
+                return false;
+            }
             break;
         }
         case 'K':
@@ -513,6 +595,81 @@ bool isValidPawnMove(const coords fromLoc, const coords toLoc)
     return false;
 }
 
+bool isValidBishopMove(const coords fromLoc, const coords toLoc)
+{
+    // if the diff(torow, fromrow) is not same as diff(tocol, fromcol) ==> invalid toLoc
+    if (abs(toLoc.row - fromLoc.row) != abs(toLoc.col - fromLoc.col))
+    {
+        // printf("\nInvalid Bishop Move\n\n");
+        return false;
+    }
+    // below if-else ladder checks if path is blocked
+    int x, y;
+    if (toLoc.row < fromLoc.row && toLoc.col > fromLoc.col) // NE (upper right)
+    {
+        x = fromLoc.row - 1, y = fromLoc.col + 1;
+        while (x != toLoc.row && y != toLoc.col)
+        {
+            // if any of the diagonal position between fromLoc & toLoc is not empty ==> blocked 
+            if (pos[x][y].pieceType != ' ')
+            {
+                printf("\nBishop's Path is Blocked\n\n");
+                return false;
+            }
+            x--, y++;
+        }
+    }
+    else if (toLoc.row < fromLoc.row && toLoc.col < fromLoc.col) // NW (upper left)
+    {
+        x = fromLoc.row - 1, y = fromLoc.col - 1;
+        while (x != toLoc.row && y != toLoc.col)
+        {
+            if (pos[x][y].pieceType != ' ')
+            {
+                printf("\nBishop's Path is Blocked\n\n");
+                return false;
+            }
+            x--, y--;
+        }
+    }
+    else if (toLoc.row > fromLoc.row && toLoc.col > fromLoc.col) // SE (downward right)
+    {
+        x = fromLoc.row + 1, y = fromLoc.col + 1;
+        while (x != toLoc.row && y != toLoc.col)
+        {
+            if (pos[x][y].pieceType != ' ')
+            {
+                printf("\nBishop's Path is Blocked\n\n");
+                return false;
+            }
+            x++, y++;
+        }
+    }
+    else if (toLoc.row > fromLoc.row && toLoc.col < fromLoc.col) // SW (downward left)
+    {
+        x = fromLoc.row + 1, y = fromLoc.col - 1;
+        while (x != toLoc.row && y != toLoc.col)
+        {
+            if (pos[x][y].pieceType != ' ')
+            {
+                printf("\nBishop's Path is Blocked\n\n");
+                return false;
+            }
+            x++, y--;
+        }
+    }
+    return true;
+}
+
+bool isValidQueenMove(const coords fromLoc, const coords toLoc)
+{
+    if (isValidRookMove(fromLoc, toLoc) || isValidBishopMove(fromLoc, toLoc))
+    {
+        return true;
+    }
+    return false;
+}
+
 void makeMove(const coords fromLoc, const coords toLoc)
 {
     // the new toLoc has the fromLoc's color and pieceType
@@ -531,12 +688,12 @@ bool areKingsAlive(void)
         {
             if (pos[i][j].color == 'B' && pos[i][j].pieceType == 'K')
             {
-                printf("\nBlack King is Alive!!\n\n");
+                // printf("\nBlack King is Alive!!\n\n");
                 isBlackKingAlive = true;
             }
             else if (pos[i][j].color == 'W' && pos[i][j].pieceType == 'K')
             {
-                printf("\nWhite King is Alive!!\n\n");
+                // printf("\nWhite King is Alive!!\n\n");
                 isWhiteKingAlive = true;
             }
         }
